@@ -6,25 +6,31 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	core_logger "github.com/vvvlhin/golang-ToDoApp/internal/core/logger"
 	core_postgres_pool "github.com/vvvlhin/golang-ToDoApp/internal/core/repository/postges/conn"
 	core_http_middleware "github.com/vvvlhin/golang-ToDoApp/internal/core/transport/http/middleware"
 	core_http_server "github.com/vvvlhin/golang-ToDoApp/internal/core/transport/http/server"
+	tasks_postgres_repository "github.com/vvvlhin/golang-ToDoApp/internal/features/tasks/repository/postgres"
+	tasks_service "github.com/vvvlhin/golang-ToDoApp/internal/features/tasks/service"
+	tasks_transport_http "github.com/vvvlhin/golang-ToDoApp/internal/features/tasks/transport/http"
 	users_postgres_repository "github.com/vvvlhin/golang-ToDoApp/internal/features/users/repository/postgres"
 	users_service "github.com/vvvlhin/golang-ToDoApp/internal/features/users/service"
 	users_transport_http "github.com/vvvlhin/golang-ToDoApp/internal/features/users/transport/http"
 	"go.uber.org/zap"
 )
 
+var timeZone = time.UTC
+
 func main() {
+	time.Local = timeZone
 	ctx, cancel := signal.NotifyContext(
 		context.Background(),
 		syscall.SIGINT, syscall.SIGTERM,
 	)
 
 	defer cancel()
-	fmt.Println("Hello, ToDo app")
 
 	logger, err := core_logger.NewLogger(core_logger.NewConfigMust())
 
@@ -34,6 +40,7 @@ func main() {
 	}
 	defer logger.Close()
 
+	logger.Debug("application time zone", zap.Any("zone", timeZone))
 	logger.Debug("initializing postgres connection pool")
 	pool, err := core_postgres_pool.NewConnectionPool(
 		ctx,
@@ -50,6 +57,12 @@ func main() {
 	usersService := users_service.NewUsersService(usersRepository)
 	userTransportHTTP := users_transport_http.NewUsersHTTPHandler(usersService)
 
+	logger.Debug("initializing feature", zap.String("feature", "tasks"))
+
+	tasksRepository := tasks_postgres_repository.NewTasksRepository(pool)
+	tasksService := tasks_service.NewTasksService(tasksRepository)
+	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(tasksService)
+
 	logger.Debug("initializing HTTP server")
 
 	httpServer := core_http_server.NewHTTPServer(
@@ -63,6 +76,7 @@ func main() {
 
 	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(userTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(tasksTransportHTTP.Routes()...)
 	httpServer.RegisterAPIRouters(apiVersionRouter)
 
 	if err := httpServer.Run(ctx); err != nil {
