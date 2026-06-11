@@ -11,6 +11,12 @@ import (
 
 type GetTasksResponse []TaskDTOResponse
 
+var (
+	userIDParam = "user_id"
+	limitParam  = "limit"
+	offsetParam = "offset"
+)
+
 func (h *TasksHTTPHandler) GetTasks(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -36,17 +42,17 @@ func (h *TasksHTTPHandler) GetTasks(rw http.ResponseWriter, r *http.Request) {
 }
 
 func getLimitOffsetQueryParams(r *http.Request) (*int, *int, *int, error) {
-	userID, err := core_http_utils.GetQueryParamInt(r, "user_id")
+	userID, err := core_http_utils.GetQueryParamInt(r, userIDParam)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("get `user_id` query param: %w", err)
 	}
 
-	limit, err := core_http_utils.GetQueryParamInt(r, "limit")
+	limit, err := core_http_utils.GetQueryParamInt(r, limitParam)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("get 'limit' query param: %w", err)
 	}
 
-	offset, err := core_http_utils.GetQueryParamInt(r, "offset")
+	offset, err := core_http_utils.GetQueryParamInt(r, offsetParam)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("get 'offset' query param: %w", err)
 	}
