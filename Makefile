@@ -67,5 +67,8 @@ todoapp-run:
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
 	export POSTGRES_HOST=localhost POSTGRES_PORT=5433 && \
 	make env-port-forward && \
-	sudo go mod tidy && \
+	go mod tidy && \
 	go run cmd/todoapp/main.go \
+
+todoapp-deploy:
+	docker compose up -d --build todoapp

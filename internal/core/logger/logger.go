@@ -43,14 +43,14 @@ func NewLogger(config Config) (*Logger, error) {
 		return nil, fmt.Errorf("unmarshal log level: %w", err)
 	}
 
-	if err := os.MkdirAll(config.Floder, 0755); err != nil {
+	if err := os.MkdirAll(config.Folder, 0755); err != nil {
 		return nil, fmt.Errorf("mkdir log folder: %w", err)
 	}
 
 	timeStamp := time.Now().UTC().Format("2006-01-02T15-04-05.000000")
-	logFilePath := filepath.Join(config.Floder, fmt.Sprintf("%s.log", timeStamp))
+	logFilePath := filepath.Join(config.Folder, fmt.Sprintf("%s.log", timeStamp))
 
-	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY, 0655)
+	logFile, err := os.OpenFile(logFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 
 	if err != nil {
 		return nil, fmt.Errorf("open log file: %w", err)
