@@ -70,5 +70,11 @@ todoapp-run:
 	go mod tidy && \
 	go run cmd/todoapp/main.go \
 
+ps:
+	@docker compose ps
+
 todoapp-deploy:
-	docker compose up -d --build todoapp
+	@docker compose up -d --build todoapp
+
+todoapp-undeploy:
+	@docker compose down

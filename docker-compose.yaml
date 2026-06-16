@@ -18,7 +18,7 @@ services:
     volumes:
       - ${PROJECT_ROOT}/out/logs:/app/out/logs
     ports:
-      - "5050:5050" #Наебнется?#
+      - "5050:5050"
     restart: always
 
   todoapp-postgres:
