@@ -3,6 +3,7 @@ export
 
 export PROJECT_ROOT=${shell pwd}
 
+
 env-up:
 	@docker compose up -d todoapp-postgres
 
@@ -71,10 +72,20 @@ todoapp-run:
 	go run cmd/todoapp/main.go \
 
 ps:
-	@docker compose ps
+	@docker compose ps 
 
 todoapp-deploy:
 	@docker compose up -d --build todoapp
 
 todoapp-undeploy:
 	@docker compose down
+
+swagger-gen:
+	@docker compose run --rm swagger \
+		init \
+		-g cmd/todoapp/main.go \
+		-o docs \
+		--parseInternal \
+		--parseVendor \
+		--parseFuncBody \
+ 		--pd \

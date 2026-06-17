@@ -10,6 +10,19 @@ import (
 
 type GetTaskResponse TaskDTOResponse
 
+// GetTask godoc
+//
+//	@Summary		Получить задачу
+//	@Description	Получить одну задачу конкретного пользователя по ID
+//	@Tags			tasks
+//	@Produce		json
+//	@Param			id 		path 		int true							"ID получаемой задачи"
+//	@Success		200		{object}	GetTaskResponse						"Успешно полученная задача"
+//	@Failure		400		{object}	core_http_response.ErrorResponse	"Bad request"
+//	@Failure		404		{object}	core_http_response.ErrorResponse	"Task not found"
+//	@Failure		500		{object}	core_http_response.ErrorResponse	"Internal server error"
+//	@Router			/tasks/{id} [get]
+
 func (h *TasksHTTPHandler) GetTask(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

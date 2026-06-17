@@ -17,6 +17,20 @@ var (
 	offsetParam = "offset"
 )
 
+// GetTasks godoc
+
+// @Summary Получить все задачи пользователя
+// @Description Получить список всех задач пользователя по ID
+// @Tags tasks
+// @Produce json
+// @Param 	id 		query int 	false 								"ID автора задач"
+// @Param 	limit 	query int 	false 								"Размер страницы с задачами"
+// @Param 	offset 	query int 	false 								"Смещение относительно 1-ой задачи страницы с задачами"
+// @Success	200 	{object} 	GetTasksResponse 					"Список задач"
+// @Failure	400		{object}	core_http_response.ErrorResponse	"BadRequest"
+// @Failure	500		{object}	core_http_response.ErrorResponse	"Internal Server Error"
+// @Router	/tasks	[get]
+
 func (h *TasksHTTPHandler) GetTasks(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
